@@ -8,7 +8,7 @@ services:
     restart: "no"
 
   threadfin:
-    image: fyb3roptik/threadfin:latest
+    image: fyb3roptik/threadfin:1.2.35
     container_name: threadfin
     ports:
       - "34400:34400"
