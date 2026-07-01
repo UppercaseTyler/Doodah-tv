@@ -5,8 +5,8 @@ channels:
   - name: Oakland Zoo Giraffes
     number: 101
     enabled: true
-    source: ozolio
-    url: https://www.ozolio.com/explore/NRKX000015DD
+    source: hls
+    url: https://use01-smr03-relay.ozolio.com/hll-live/_definst_/relay01.nrkxelr.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w1929047942.m3u8
 
   - name: Penguin Cam
     number: 102
