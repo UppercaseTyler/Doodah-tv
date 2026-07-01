@@ -2,6 +2,7 @@ import yaml
 
 from playlist import write_playlist
 from providers.hls import HLSProvider
+from guide import write_guide
 
 
 PROVIDERS = {
@@ -35,8 +36,10 @@ def main():
     streams = resolve_channels(config)
 
     playlist_path = write_playlist(streams)
+    guide_path = write_guide(streams)
 
     print(f"Generated {playlist_path}")
+    print(f"Generated {guide_path}")
 
 
 if __name__ == "__main__":

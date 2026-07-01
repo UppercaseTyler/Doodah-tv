@@ -9,4 +9,9 @@ class HLSProvider(Provider):
             enabled=channel["enabled"],
             source=channel["source"],
             url=channel["url"],
-        )
+            guide_title=channel.get("guide_title", channel["name"]),
+            guide_description=channel.get(
+                "guide_description",
+                f"Live stream from Doodah TV: {channel['name']}",
+    ),
+)

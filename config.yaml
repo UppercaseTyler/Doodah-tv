@@ -7,15 +7,21 @@ channels:
     enabled: true
     source: hls
     url: https://use01-smr03-relay.ozolio.com/hll-live/_definst_/relay01.nrkxelr.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w1929047942.m3u8
+    guide_title: Oakland Zoo Giraffes
+    guide_description: Live giraffe habitat from the Oakland Zoo.
 
   - name: Penguin Cam
     number: 102
     enabled: false
     source: youtube
     url: https://www.youtube.com/live/abcdefghijk
+    guide_title: Oakland Zoo Giraffes
+    guide_description: Live giraffe habitat from the Oakland Zoo.
 
   - name: Direct HLS Stream
     number: 103
     enabled: false
     source: hls
     url: https://example.com/live.m3u8
+    guide_title: Oakland Zoo Giraffes
+    guide_description: Live giraffe habitat from the Oakland Zoo.

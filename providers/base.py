@@ -8,6 +8,8 @@ class ResolvedStream:
     enabled: bool
     source: str
     url: str
+    guide_title: str
+    guide_description: str
 
 
 class Provider:

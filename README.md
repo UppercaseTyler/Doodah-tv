@@ -7,6 +7,9 @@
 
 Doodah TV is a self-hosted application that discovers and organizes public livestreams (such as zoo cams, aquarium cams, and other webcams) and exposes them as standards-based IPTV channels.
 
+For Doodah TV playlists, Threadfin should use:
+
+EPG Source: XEPG
 
 ## Goals
 
