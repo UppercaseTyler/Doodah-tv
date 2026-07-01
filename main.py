@@ -1,5 +1,6 @@
 import yaml
 
+from playlist import write_playlist
 from providers.hls import HLSProvider
 
 
@@ -33,11 +34,9 @@ def main():
     config = load_config()
     streams = resolve_channels(config)
 
-    for stream in streams:
-        print(f"{stream.number} - {stream.name}")
-        print(f"Source: {stream.source}")
-        print(f"URL: {stream.url}")
-        print()
+    playlist_path = write_playlist(streams)
+
+    print(f"Generated {playlist_path}")
 
 
 if __name__ == "__main__":
