@@ -1,0 +1,21 @@
+# Doodah TV Configuration
+
+channels:
+
+  - name: Oakland Zoo Giraffes
+    number: 101
+    enabled: true
+    source: ozolio
+    url: https://www.ozolio.com/explore/NRKX000015DD
+
+  - name: Penguin Cam
+    number: 102
+    enabled: false
+    source: youtube
+    url: https://www.youtube.com/live/abcdefghijk
+
+  - name: Direct HLS Stream
+    number: 103
+    enabled: false
+    source: hls
+    url: https://example.com/live.m3u8
