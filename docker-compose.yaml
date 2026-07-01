@@ -5,3 +5,17 @@ services:
     volumes:
       - ./config.yaml:/app/config.yaml:ro
       - ./output:/app/output
+    restart: "no"
+
+  threadfin:
+    image: fyb3roptik/threadfin:latest
+    container_name: threadfin
+    ports:
+      - "34400:34400"
+    environment:
+      - TZ=America/New_York
+    volumes:
+      - ./threadfin/conf:/home/threadfin/conf
+      - ./threadfin/temp:/tmp/threadfin
+      - ./output:/doodah-output:ro
+    restart: unless-stopped
