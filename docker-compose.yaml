@@ -1,0 +1,7 @@
+services:
+  doodah-tv:
+    build: .
+    container_name: doodah-tv
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./output:/app/output
