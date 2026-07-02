@@ -15,7 +15,7 @@ channels:
     guide_title: Oakland Zoo Giraffes
     guide_description: Live giraffe habitat from the Oakland Zoo.
 
-  - name: Penguin Cam
+  - name: Moody Gardens Penguin Cam
     number: 102
     enabled: true
     source: youtube

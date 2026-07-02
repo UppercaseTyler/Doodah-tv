@@ -38,7 +38,7 @@ def main():
     config = load_config()
     streams = resolve_channels(config)
 
-    playlist_path = write_playlist(streams)
+    playlist_path = write_playlist(streams, config["server"])
     guide_path = write_guide(streams)
 
     print(f"Generated {playlist_path}")
