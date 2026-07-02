@@ -11,6 +11,14 @@ For Doodah TV playlists, Threadfin should use:
 
 EPG Source: XEPG
 
+## Added a channel but it doesn't appear in Plex?
+
+Update Playlist
+Update XMLTV
+Verify the channel is assigned to the correct XMLTV source in Threadfin
+Regenerate XEPG
+Refresh the Plex guide
+
 ## Goals
 
 * Support multiple stream providers (Ozolio, YouTube Live, direct HLS, and more)

@@ -19,7 +19,7 @@ channels:
     number: 102
     enabled: true
     source: youtube
-    url: https://www.youtube.com/embed/i8rm3y8oI2A?rel=0&showinfo=0&autoplay=1&api=1&mute=1
+    url: https://www.youtube.com/watch?v=i8rm3y8oI2A
     guide_title: Cheyenne Mountain Zoo Giraffes
     guide_description: Live giraffe habitat from the Cheyenne Mountain Zoo.
 
@@ -56,10 +56,27 @@ channels:
     guide_title: Moody Gardens Penguin Cam
     guide_description: Live penguin habitat from the Moody Gardens Zoo in Galveston, TX.
 
-  - name: Direct HLS Stream
+  - name: Georgia Aquarium Main Tank
     number: 203
-    enabled: false
+    enabled: true
     source: hls
-    url: https://example.com/live.m3u8
-    guide_title: Oakland Zoo Giraffes
-    guide_description: Live giraffe habitat from the Oakland Zoo.
+    url: https://usw01-smr03-relay.ozolio.com/hls-live/_definst_/relay01.eecm52.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w178105686.m3u8
+    guide_title: Georgia Aquarium Main Tank
+    guide_description: Live aquarium view from the Georgia Aquarium.
+
+  - name: Georgia Aquarium Puffin Cam
+    number: 204
+    enabled: true
+    source: hls
+    url: https://usw01-smr03-relay.ozolio.com/hls-live/_definst_/relay01.yogybc4.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w1270290693.m3u8
+    guide_title: Georgia Aquarium Puffin Cam
+    guide_description: Live puffin exhibit from the Georgia Aquarium.
+
+  - name: Georgia Aquarium Sea Lion Cam
+    number: 205
+    enabled: true
+    source: hls
+    url: https://usw01-smr03-relay.ozolio.com/hll-live/_definst_/relay01.zmzabg0.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w546052924.m3u8
+    guide_title: Georgia Aquarium Sea Lion Cam
+    guide_description: Live sea lion exhibit from the Georgia Aquarium.
+
