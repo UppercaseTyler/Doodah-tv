@@ -15,8 +15,41 @@ channels:
     guide_title: Oakland Zoo Giraffes
     guide_description: Live giraffe habitat from the Oakland Zoo.
 
-  - name: Moody Gardens Penguin Cam
+  - name: Cheyenne Mountain Zoo Giraffes
     number: 102
+    enabled: true
+    source: youtube
+    url: https://www.youtube.com/embed/i8rm3y8oI2A?rel=0&showinfo=0&autoplay=1&api=1&mute=1
+    guide_title: Cheyenne Mountain Zoo Giraffes
+    guide_description: Live giraffe habitat from the Cheyenne Mountain Zoo.
+
+    - name: Victoria Zoo Giraffes
+    number: 103
+    enabled: true
+    source: youtube
+    url: https://www.youtube.com/watch?v=hNexlUkTTuc
+    guide_title: Victoria Zoo Giraffes
+    guide_description: Live giraffe habitat from the Victoria Zoo.
+
+  - name: Greenville Zoo Giraffes
+    number: 104
+    enabled: false
+    source: youtube
+    url: https://www.youtube.com/watch?v=hNexlUkTTuc
+    guide_title: Greenville Zoo Giraffes
+    guide_description: Live giraffe habitat from the Greenville Zoo.
+    guide_description: Live giraffe habitat from the Victoria Zoo.
+
+    - name: Seattle Aquarium Otters
+    number: 201
+    enabled: true
+    source: youtube
+    url: https://www.youtube.com/watch?v=NqOmHpwMUxs
+    guide_title: Seattle Aquarium Otters
+    guide_description: Live otter habitat from the Seattle Aquarium.
+
+  - name: Moody Gardens Penguin Cam
+    number: 202
     enabled: true
     source: youtube
     url: https://www.youtube.com/watch?v=HHp4rjhJsWI
@@ -24,7 +57,7 @@ channels:
     guide_description: Live penguin habitat from the Moody Gardens Zoo in Galveston, TX.
 
   - name: Direct HLS Stream
-    number: 103
+    number: 203
     enabled: false
     source: hls
     url: https://example.com/live.m3u8
