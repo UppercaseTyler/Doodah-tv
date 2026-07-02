@@ -36,13 +36,14 @@ def resolve_channels(config: dict):
 
 def main():
     config = load_config()
-    streams = resolve_channels(config)
+    channels = [channel for channel in config["channels"] if channel.get("enabled", True)]
 
-    playlist_path = write_playlist(streams, config["server"])
-    guide_path = write_guide(streams)
+    playlist_path = write_playlist(channels, config["server"])
+    guide_path = write_guide(channels)
 
     print(f"Generated {playlist_path}")
     print(f"Generated {guide_path}")
+
     start_server(config["server"])
 
 if __name__ == "__main__":

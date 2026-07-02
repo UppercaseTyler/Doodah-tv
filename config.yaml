@@ -23,7 +23,7 @@ channels:
     guide_title: Cheyenne Mountain Zoo Giraffes
     guide_description: Live giraffe habitat from the Cheyenne Mountain Zoo.
 
-    - name: Victoria Zoo Giraffes
+  - name: Victoria Zoo Giraffes
     number: 103
     enabled: true
     source: youtube
@@ -40,7 +40,7 @@ channels:
     guide_description: Live giraffe habitat from the Greenville Zoo.
     guide_description: Live giraffe habitat from the Victoria Zoo.
 
-    - name: Seattle Aquarium Otters
+  - name: Seattle Aquarium Otters
     number: 201
     enabled: true
     source: youtube

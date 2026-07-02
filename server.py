@@ -59,13 +59,23 @@ class DoodahRequestHandler(BaseHTTPRequestHandler):
 
         for channel in config["channels"]:
             if channel["number"] == channel_number:
-                provider = PROVIDERS[channel["source"]]
-                stream = provider.resolve(channel)
+                try:
+                    provider = PROVIDERS[channel["source"]]
+                    stream = provider.resolve(channel)
 
-                self.send_response(302)
-                self.send_header("Location", stream.url)
-                self.end_headers()
-                return
+                    self.send_response(302)
+                    self.send_header("Location", stream.url)
+                    self.end_headers()
+                    return
+
+                except Exception as error:
+                    print(f"Channel {channel_number} unavailable: {error}")
+
+                    self.send_response(503)
+                    self.send_header("Content-Type", "text/plain")
+                    self.end_headers()
+                    self.wfile.write(b"Channel temporarily unavailable")
+                    return
 
         self.send_error(404, "Channel not found")
 

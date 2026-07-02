@@ -1,20 +1,26 @@
-import yt_dlp
+import subprocess
 
 from providers.base import Provider, ResolvedStream
 
 
 class YouTubeProvider(Provider):
     def resolve(self, channel: dict) -> ResolvedStream:
-        ydl_options = {
-            "quiet": True,
-            "no_warnings": True,
-            "format": "best",
-        }
+        result = subprocess.run(
+            [
+                "yt-dlp",
+                "-g",
+                "--remote-components",
+                "ejs:github",
+                "-f",
+                "best[protocol^=m3u8]/best",
+                channel["url"],
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
 
-        with yt_dlp.YoutubeDL(ydl_options) as ydl:
-            info = ydl.extract_info(channel["url"], download=False)
-
-        stream_url = info["url"]
+        stream_url = result.stdout.strip().splitlines()[-1]
 
         return ResolvedStream(
             name=channel["name"],

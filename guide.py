@@ -11,25 +11,30 @@ def xmltv_time(dt: datetime) -> str:
     return dt.strftime("%Y%m%d%H%M%S %z")
 
 
-def generate_xmltv(streams):
+def generate_xmltv(channels):
     now = datetime.now(timezone.utc)
     end = now + timedelta(hours=24)
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>']
     lines.append('<tv generator-info-name="Doodah TV">')
 
-    for stream in streams:
-        channel_id = str(stream.number)
-        name = escape(stream.name)
+    for channel in channels:
+        channel_id = str(channel["number"])
+        name = escape(channel["name"])
 
         lines.append(f'  <channel id="{channel_id}">')
         lines.append(f"    <display-name>{name}</display-name>")
         lines.append("  </channel>")
 
-    for stream in streams:
-        channel_id = str(stream.number)
-        title = escape(stream.guide_title)
-        description = escape(stream.guide_description)
+    for channel in channels:
+        channel_id = str(channel["number"])
+        title = escape(channel.get("guide_title", channel["name"]))
+        description = escape(
+            channel.get(
+                "guide_description",
+                f"Live stream from Doodah TV: {channel['name']}",
+            )
+        )
 
         lines.append(
             f'  <programme start="{xmltv_time(now)}" '
@@ -43,7 +48,6 @@ def generate_xmltv(streams):
     lines.append("</tv>")
 
     return "\n".join(lines) + "\n"
-
 
 def write_guide(streams):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
