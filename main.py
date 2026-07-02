@@ -2,12 +2,14 @@ import yaml
 
 from playlist import write_playlist
 from providers.hls import HLSProvider
+from providers.youtube import YouTubeProvider
 from guide import write_guide
 from server import start_server
 
 
 PROVIDERS = {
     "hls": HLSProvider(),
+    "youtube": YouTubeProvider(),
 }
 
 
@@ -41,7 +43,7 @@ def main():
 
     print(f"Generated {playlist_path}")
     print(f"Generated {guide_path}")
-    start_server()
+    start_server(config["server"])
 
 if __name__ == "__main__":
     main()

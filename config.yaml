@@ -1,5 +1,10 @@
 # Doodah TV Configuration
 
+server:
+  bind: 0.0.0.0
+  host: 10.0.0.171
+  port: 8090
+
 channels:
 
   - name: Oakland Zoo Giraffes
@@ -12,11 +17,11 @@ channels:
 
   - name: Penguin Cam
     number: 102
-    enabled: false
+    enabled: true
     source: youtube
-    url: https://www.youtube.com/live/abcdefghijk
-    guide_title: Oakland Zoo Giraffes
-    guide_description: Live giraffe habitat from the Oakland Zoo.
+    url: https://www.youtube.com/watch?v=HHp4rjhJsWI
+    guide_title: Moody Gardens Penguin Cam
+    guide_description: Live penguin habitat from the Moody Gardens Zoo in Galveston, TX.
 
   - name: Direct HLS Stream
     number: 103
