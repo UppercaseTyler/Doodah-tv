@@ -5,11 +5,23 @@
 
 ## Overview
 
-Doodah TV is a self-hosted application that discovers and organizes public livestreams (such as zoo cams, aquarium cams, and other webcams) and exposes them as standards-based IPTV channels.
+Doodah TV is a lightweight IPTV backend that turns live internet streams into television channels. It aggregates streams from multiple providers, resolves dynamic URLs (such as YouTube live streams), generates M3U playlists and XMLTV guides, and exposes stable channel endpoints for Plex, Jellyfin, Threadfin, and other IPTV clients.
 
 For Doodah TV playlists, Threadfin should use:
 
 EPG Source: XEPG
+
+## Features
+
+- Live IPTV channel generation
+- XMLTV guide generation
+- Stable HTTP channel endpoints
+- Provider architecture for multiple stream types
+- Static HLS support
+- YouTube Live support via yt-dlp
+- Automatic YouTube URL resolution
+- Docker deployment
+- Plex and Threadfin compatible
 
 ## Added a channel but it doesn't appear in Plex?
 
@@ -25,7 +37,7 @@ Refresh the Plex guide
 * Generate standards-compliant M3U playlists
 * Generate XMLTV guide data
 * Be lightweight and easy to configure
-* Work with existing IPTV software such as Threadfin, xTeVe, and ErsatzTV
+* Work with existing IPTV software such as Threadfin
 * Keep provider-specific logic isolated from the core application
 
 ## Non-Goals (for now)
@@ -33,47 +45,27 @@ Refresh the Plex guide
 * Replace Plex, Jellyfin, or Emby
 * Replace IPTV tuner software
 * Record or permanently archive streams
-* Implement DVR functionality
 * Control PTZ (pan/tilt/zoom) cameras
 
-## Planned Architecture
-
-```text
-Public Livestreams
-        │
-        ▼
-    Doodah TV
-        │
-        ├── Resolve stream providers
-        ├── Generate M3U playlist
-        ├── Generate XMLTV guide
-        └── Monitor stream health
-        │
-        ▼
-Threadfin / xTeVe / ErsatzTV
-        │
-        ▼
-Plex / Jellyfin / Emby
-```
 
 ## Roadmap
 
 ### Phase 1
 
-* [ ] Support direct HLS streams
-* [ ] Generate M3U playlists
-* [ ] Import channels into Plex via an IPTV bridge
+* [x] Support direct HLS streams
+* [x] Generate M3U playlists
+* [x] Import channels into Plex via an IPTV bridge
 
 ### Phase 2
 
 * [ ] Automatic Ozolio stream discovery
-* [ ] YouTube Live support
-* [ ] Stream health monitoring
-* [ ] Automatic reconnection
+* [x] YouTube Live support
+* [x] Stream health monitoring
+* [x] Automatic reconnection
 
 ### Future Ideas
 
-* [ ] Rolling pause/rewind buffer
+* [x] Rolling pause/rewind buffer
 * [ ] Stream failover
 * [ ] Rotating channels
 * [ ] Web management interface

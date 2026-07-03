@@ -56,16 +56,24 @@ channels:
     guide_title: Moody Gardens Penguin Cam
     guide_description: Live penguin habitat from the Moody Gardens Zoo in Galveston, TX.
 
-  - name: Georgia Aquarium Main Tank
+  - name: Georgia Aquarium Ocean Voyager Tank
     number: 203
     enabled: true
     source: hls
+    url: https://usw01-smr05-relay.ozolio.com/hls-live/_definst_/relay01.hqko7z.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w1033506470.m3u8
+    guide_title: Georgia Aquarium Ocean Voyager Tank
+    guide_description: Live ocean aquarium view from the Georgia Aquarium.
+
+  - name: Georgia Aquarium Reef Tank
+    number: 204
+    enabled: true
+    source: hls
     url: https://usw01-smr03-relay.ozolio.com/hls-live/_definst_/relay01.eecm52.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w178105686.m3u8
-    guide_title: Georgia Aquarium Main Tank
-    guide_description: Live aquarium view from the Georgia Aquarium.
+    guide_title: Georgia Aquarium Reef Tank
+    guide_description: Live aquarium reef view from the Georgia Aquarium.
 
   - name: Georgia Aquarium Puffin Cam
-    number: 204
+    number: 205
     enabled: true
     source: hls
     url: https://usw01-smr03-relay.ozolio.com/hls-live/_definst_/relay01.yogybc4.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w1270290693.m3u8
@@ -73,7 +81,7 @@ channels:
     guide_description: Live puffin exhibit from the Georgia Aquarium.
 
   - name: Georgia Aquarium Sea Lion Cam
-    number: 205
+    number: 206
     enabled: true
     source: hls
     url: https://usw01-smr03-relay.ozolio.com/hll-live/_definst_/relay01.zmzabg0.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w546052924.m3u8
