@@ -1,6 +1,8 @@
+from fileinput import filename
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
+import mimetypes
 
 import yaml
 
@@ -9,6 +11,8 @@ from providers.youtube import YouTubeProvider
 
 
 OUTPUT_DIR = Path("output")
+
+LOGO_DIR = Path("logos")
 
 PROVIDERS = {
     "hls": HLSProvider(),
@@ -35,6 +39,12 @@ class DoodahRequestHandler(BaseHTTPRequestHandler):
 
         if parsed_path.startswith("/channel/"):
             self.serve_channel(parsed_path)
+            return
+        
+        if parsed_path.startswith("/logos/"):
+            filename = parsed_path.replace("/logos/", "")
+            content_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+            self.serve_file(LOGO_DIR / filename, content_type)
             return
 
         self.send_error(404, "Not Found")
