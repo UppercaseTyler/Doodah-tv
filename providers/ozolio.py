@@ -39,14 +39,17 @@ class OzolioProvider(Provider):
     def resolve_object_id(self, url: str) -> str:
         parsed = urlparse(url)
 
-        if "relay.ozolio.com" in parsed.netloc and parsed.path.endswith("/pub.api"):
-            object_id = self.extract_object_id_from_query(parsed.query)
-            if object_id:
-                return object_id
+        # Case 1: URL already contains an object ID (embed URL)
+        object_id = self.extract_object_id_from_query(parsed.query)
+        if object_id:
+            return object_id
 
+        # Case 2: Ozolio Explore page
         if "ozolio.com" in parsed.netloc and parsed.path.startswith("/explore/"):
-            return self.extract_object_id_from_page(url)
+            camera_id = parsed.path.replace("/explore/", "").strip("/")
+            return f"CID_{camera_id}"
 
+        # Case 3: Zoo or aquarium webpage
         return self.extract_object_id_from_page(url)
 
     def extract_object_id_from_query(self, query: str) -> str | None:
@@ -58,7 +61,7 @@ class OzolioProvider(Provider):
 
         object_id = values[0]
 
-        if not object_id.startswith("EMB_"):
+        if not object_id.startswith(("EMB_", "CID_")):
             raise ValueError(f"Unexpected Ozolio object ID: {object_id}")
 
         return object_id
@@ -66,24 +69,50 @@ class OzolioProvider(Provider):
     def extract_object_id_from_page(self, url: str) -> str:
         response = requests.get(url, timeout=15)
         response.raise_for_status()
-
         html = response.text
 
-        iframe_match = re.search(
-            r'pub\.api\?cmd=embed&oid=(EMB_[A-Z0-9]+)',
-            html,
-        )
-        if iframe_match:
-            return iframe_match.group(1)
-
-        player_match = re.search(
-            r'object:\s*"([^"]+)"',
-            html,
-        )
+        # If this is an Ozolio embed/explore page, it may contain:
+        # object:"EMB_..."
+        player_match = re.search(r'object:\s*"([^"]+)"', html)
         if player_match:
             return player_match.group(1)
 
-        raise ValueError("Could not find Ozolio object ID")
+        # Otherwise, look for Ozolio iframe blocks on a host page.
+        iframe_blocks = re.findall(
+            r'<iframe[^>]+relay\.ozolio\.com/pub\.api\?cmd=embed&oid=(EMB_[A-Z0-9]+)[^>]*>',
+            html,
+            flags=re.IGNORECASE,
+        )
+
+        if not iframe_blocks:
+            raise ValueError("Could not find Ozolio object ID")
+
+        # Oakland has multiple Ozolio embeds, some hidden by Webflow.
+        # Prefer an iframe whose nearby wrapper is not marked w-condition-invisible.
+        visible_matches = []
+
+        for match in re.finditer(
+            r'(<div[^>]*class="[^"]*"[^>]*>.*?<iframe[^>]+relay\.ozolio\.com/pub\.api\?cmd=embed&oid=(EMB_[A-Z0-9]+)[^>]*>)',
+            html,
+            flags=re.IGNORECASE | re.DOTALL,
+        ):
+            block = match.group(1)
+            object_id = match.group(2)
+
+            if "w-condition-invisible" not in block:
+                visible_matches.append(object_id)
+
+        if len(visible_matches) == 1:
+            return visible_matches[0]
+
+        if len(iframe_blocks) == 1:
+            return iframe_blocks[0]
+
+        raise ValueError(
+            f"Found {len(iframe_blocks)} Ozolio embeds on the page, but Doodah could not "
+            "determine which camera is active automatically. "
+            "Please specify the optional object: field for this channel."
+        )
 
     def initialize_session(self, server: str, object_id: str, document: str) -> dict:
         response = requests.get(
@@ -105,7 +134,12 @@ class OzolioProvider(Provider):
         for output in outputs:
             formats = output.get("formats", "")
 
-            if "M3U8" in formats:
+            if isinstance(formats, list):
+                has_m3u8 = "M3U8" in formats
+            else:
+                has_m3u8 = "M3U8" in str(formats).split(";")
+
+            if has_m3u8:
                 return output
 
         raise ValueError("No M3U8 output found")
