@@ -10,8 +10,8 @@ channels:
   - name: Oakland Zoo Giraffes
     number: 101
     enabled: true
-    source: hls
-    url: https://use01-smr04-relay.ozolio.com/hll-live/_definst_/relay01.nrkxelr.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w1708252953.m3u8
+    source: ozolio
+    url: https://www.ozolio.com/explore/NRKX000015DD
     guide_title: Oakland Zoo Giraffes
     guide_description: Live giraffe habitat from the Oakland Zoo.
 
@@ -87,27 +87,3 @@ channels:
     url: https://usw01-smr03-relay.ozolio.com/hll-live/_definst_/relay01.zmzabg0.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w546052924.m3u8
     guide_title: Georgia Aquarium Sea Lion Cam
     guide_description: Live sea lion exhibit from the Georgia Aquarium.
-
-  - name: Oakland Zoo Giraffes Ozolio Test
-    number: 901
-    enabled: true
-    source: ozolio
-    url: https://www.ozolio.com/explore/SGPR0000096C
-    guide_title: Oakland Zoo Giraffes Ozolio
-    guide_description: Live giraffe habitat from the Oakland Zoo.
-   
-  - name: Oakland Zoo Giraffes Ozolio Test
-    number: 902
-    enabled: true
-    source: ozolio
-    url: https://www.oaklandzoo.org/webcams/giraffe-cam
-    guide_title: Oakland Zoo Giraffes Ozolio
-    guide_description: Live giraffe habitat from the Oakland Zoo.
-
-  - name: Oakland Zoo Giraffes Ozolio Test
-    number: 903
-    enabled: true
-    source: ozolio
-    url: https://relay.ozolio.com/pub.api?cmd=embed&oid=EMB_XNGZ00000E99
-    guide_title: Oakland Zoo Giraffes Ozolio
-    guide_description: Live giraffe habitat from the Oakland Zoo.
