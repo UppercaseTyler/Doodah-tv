@@ -3,13 +3,16 @@ import yaml
 from playlist import write_playlist
 from providers.hls import HLSProvider
 from providers.youtube import YouTubeProvider
+from providers.ozolio import OzolioProvider
 from guide import write_guide
 from server import start_server
+
 
 
 PROVIDERS = {
     "hls": HLSProvider(),
     "youtube": YouTubeProvider(),
+    "ozolio": OzolioProvider(),
 }
 
 

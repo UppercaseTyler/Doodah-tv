@@ -2,6 +2,7 @@ from fileinput import filename
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
+from providers.ozolio import OzolioProvider
 import mimetypes
 
 import yaml
@@ -17,6 +18,7 @@ LOGO_DIR = Path("logos")
 PROVIDERS = {
     "hls": HLSProvider(),
     "youtube": YouTubeProvider(),
+    "ozolio": OzolioProvider(),
 }
 
 

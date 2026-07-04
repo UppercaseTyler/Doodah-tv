@@ -11,3 +11,6 @@ __pycache__/
 
 # Generated files
 output/
+
+# Ozolio test
+test_ozolio.py
