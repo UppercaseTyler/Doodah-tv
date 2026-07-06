@@ -11,6 +11,8 @@ For Doodah TV playlists, Threadfin should use:
 
 EPG Source: XEPG
 
+Threadfin source of XMLTV: http://localhost:34400/xmltv/threadfin.xml
+
 ## Features
 
 - Live IPTV channel generation
