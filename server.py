@@ -13,7 +13,7 @@ from providers.youtube import YouTubeProvider
 
 OUTPUT_DIR = Path("output")
 
-LOGO_DIR = Path("logos")
+LOGO_DIR = Path("assets/logos")
 
 PROVIDERS = {
     "hls": HLSProvider(),
