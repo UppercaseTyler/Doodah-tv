@@ -38,7 +38,6 @@ channels:
     url: https://www.youtube.com/watch?v=hNexlUkTTuc
     guide_title: Greenville Zoo Giraffes
     guide_description: Live giraffe habitat from the Greenville Zoo.
-    guide_description: Live giraffe habitat from the Victoria Zoo.
 
   - name: Seattle Aquarium Otters
     number: 201
@@ -59,31 +58,47 @@ channels:
   - name: Georgia Aquarium Ocean Voyager Tank
     number: 203
     enabled: true
-    source: hls
-    url: https://usw01-smr05-relay.ozolio.com/hls-live/_definst_/relay01.hqko7z.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w1033506470.m3u8
+    source: ozolio
+    url: https://www.ozolio.com/explore/HQKO00000499
     guide_title: Georgia Aquarium Ocean Voyager Tank
     guide_description: Live ocean aquarium view from the Georgia Aquarium.
 
   - name: Georgia Aquarium Reef Tank
     number: 204
     enabled: true
-    source: hls
-    url: https://usw01-smr03-relay.ozolio.com/hls-live/_definst_/relay01.eecm52.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w178105686.m3u8
+    source: ozolio
+    url: https://www.ozolio.com/explore/EECM00000453
     guide_title: Georgia Aquarium Reef Tank
     guide_description: Live aquarium reef view from the Georgia Aquarium.
 
   - name: Georgia Aquarium Puffin Cam
     number: 205
     enabled: true
-    source: hls
-    url: https://usw01-smr03-relay.ozolio.com/hls-live/_definst_/relay01.yogybc4.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w1270290693.m3u8
+    source: ozolio
+    url: https://www.ozolio.com/explore/YOGY00000575
     guide_title: Georgia Aquarium Puffin Cam
     guide_description: Live puffin exhibit from the Georgia Aquarium.
 
   - name: Georgia Aquarium Sea Lion Cam
     number: 206
     enabled: true
-    source: hls
-    url: https://usw01-smr03-relay.ozolio.com/hll-live/_definst_/relay01.zmzabg0.fd0.sm1.av2.mt0.at0.as0.dv0.sh2.rt2849.rc0.edge.basic.stream/chunklist_w546052924.m3u8
+    source: ozolio
+    url: https://www.ozolio.com/explore/ZMZA0000060B
     guide_title: Georgia Aquarium Sea Lion Cam
     guide_description: Live sea lion exhibit from the Georgia Aquarium.
+
+  - name: Georgia Aquarium Beluga Cam
+    number: 207
+    enabled: true
+    source: ozolio
+    url: https://www.ozolio.com/explore/YCLP000009D0
+    guide_title: Georgia Aquarium Beluga Cam
+    guide_description: Live beluga exhibit from the Georgia Aquarium.
+
+  - name: Offline Test
+    number: 901
+    enabled: true
+    source: hls
+    url: http://10.0.0.194:8090/offline/playlist.m3u8
+    guide_title: Offline Test
+    guide_description: This channel is used to test the offline page when a stream is unavailable. It will always be unavailable.

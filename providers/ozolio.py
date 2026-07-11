@@ -1,3 +1,4 @@
+import json
 import re
 from urllib.parse import parse_qs, urlparse
 
@@ -131,18 +132,29 @@ class OzolioProvider(Provider):
         return response.json()
 
     def find_m3u8_output(self, outputs: list) -> dict:
-        for output in outputs:
+        def supports_m3u8(output: dict) -> bool:
             formats = output.get("formats", "")
 
             if isinstance(formats, list):
-                has_m3u8 = "M3U8" in formats
-            else:
-                has_m3u8 = "M3U8" in str(formats).split(";")
+                return "M3U8" in formats
 
-            if has_m3u8:
+            return "M3U8" in str(formats).split(";")
+
+        # Prefer the actual live camera output.
+        for output in outputs:
+            if (
+                supports_m3u8(output)
+                and output.get("media") == "LIVE"
+                and output.get("origin") == "camera"
+            ):
                 return output
 
-        raise ValueError("No M3U8 output found")
+        # Fallback: accept a non-preroll M3U8 output.
+        for output in outputs:
+            if supports_m3u8(output) and output.get("type") != "preroll":
+                return output
+
+        raise ValueError("No live M3U8 output found")
 
     def open_output(self, server: str, session_id: str, output_id: str) -> dict:
         response = requests.get(
