@@ -2,11 +2,12 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
+import atexit
 import mimetypes
-import time
 
 import yaml
 
+from offline_manager import OfflineManager
 from providers.hls import HLSProvider
 from providers.ozolio import OzolioProvider
 from providers.youtube import YouTubeProvider
@@ -14,7 +15,7 @@ from providers.youtube import YouTubeProvider
 
 OUTPUT_DIR = Path("output")
 LOGO_DIR = Path("assets/logos")
-OFFLINE_DIR = Path("assets/offline")
+OFFLINE_OUTPUT_DIR = Path("output/offline")
 
 
 PROVIDERS = {
@@ -22,6 +23,9 @@ PROVIDERS = {
     "youtube": YouTubeProvider(),
     "ozolio": OzolioProvider(),
 }
+
+OFFLINE_MANAGER = OfflineManager()
+atexit.register(OFFLINE_MANAGER.stop_all)
 
 
 def log(message: str) -> None:
@@ -68,41 +72,12 @@ class DoodahRequestHandler(BaseHTTPRequestHandler):
                 content_type,
             )
             return
-
-        if (
-            parsed_path.startswith("/offline/media_")
-            and parsed_path.endswith(".ts")
-        ):
-            segment_number = int(
-                parsed_path
-                .replace("/offline/media_", "")
-                .replace(".ts", "")
-            )
-
-            real_file = f"playlist{segment_number % 30}.ts"
-
-            self.serve_file(
-                OFFLINE_DIR / real_file,
-                "video/mp2t",
-            )
-            return
-
-        if parsed_path == "/offline/playlist.m3u8":
-            self.serve_offline_playlist()
-            return
-
+        
         if parsed_path.startswith("/offline/"):
-            filename = parsed_path.replace("/offline/", "")
-            content_type = (
-                mimetypes.guess_type(filename)[0]
-                or "application/octet-stream"
-            )
-
-            self.serve_file(
-                OFFLINE_DIR / filename,
-                content_type,
-            )
+            self.serve_offline_file(parsed_path)
             return
+
+    
 
         self.send_error(404, "Not Found")
 
@@ -122,6 +97,31 @@ class DoodahRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(content)))
         self.end_headers()
         self.wfile.write(content)
+
+    def serve_offline_file(self, path: str) -> None:
+        relative_path = path.removeprefix("/offline/")
+        file_path = OFFLINE_OUTPUT_DIR / relative_path
+
+        try:
+            file_path.resolve().relative_to(
+                OFFLINE_OUTPUT_DIR.resolve()
+            )
+        except ValueError:
+            self.send_error(403, "Invalid offline path")
+            return
+
+        content_type = (
+            mimetypes.guess_type(file_path.name)[0]
+            or "application/octet-stream"
+        )
+
+        if file_path.suffix == ".m3u8":
+            content_type = "application/vnd.apple.mpegurl"
+
+        self.serve_file(
+            file_path,
+            content_type,
+        )
 
     def serve_channel(self, path: str) -> None:
         channel_number = int(
@@ -158,66 +158,55 @@ class DoodahRequestHandler(BaseHTTPRequestHandler):
                     f"{type(error).__name__}: {error}"
                 )
 
-                self.send_response(503)
-                self.send_header(
-                    "Content-Type",
-                    "text/plain",
-                )
-                self.end_headers()
-                self.wfile.write(
-                    b"Channel temporarily unavailable"
-                )
-                return
+                try:
+                    playlist_path = OFFLINE_MANAGER.get_or_start(
+                        channel_number
+                    )
+
+                    fallback_url = (
+                        f"http://{config['server']['host']}:"
+                        f"{config['server']['port']}"
+                        f"/offline/{channel_number}/"
+                        f"{playlist_path.name}"
+                    )
+
+                    log(
+                        f"channel={channel_number} "
+                        f"fallback={fallback_url}"
+                    )
+
+                    self.send_response(302)
+                    self.send_header(
+                        "Location",
+                        fallback_url,
+                    )
+                    self.end_headers()
+                    return
+
+                except Exception as fallback_error:
+                    log(
+                        f"channel={channel_number} "
+                        f"fallback_failed "
+                        f"{type(fallback_error).__name__}: "
+                        f"{fallback_error}"
+                    )
+
+                    self.send_response(503)
+                    self.send_header(
+                        "Content-Type",
+                        "text/plain",
+                    )
+                    self.end_headers()
+                    self.wfile.write(
+                        b"Channel and fallback unavailable"
+                    )
+                    return
 
         log(
             f"channel={channel_number} "
             "not_found"
         )
         self.send_error(404, "Channel not found")
-
-    def serve_offline_playlist(self) -> None:
-        segment_duration = 2
-        sequence = int(
-            time.time() // segment_duration
-        )
-
-        lines = [
-            "#EXTM3U",
-            "#EXT-X-VERSION:3",
-            f"#EXT-X-TARGETDURATION:{segment_duration}",
-            f"#EXT-X-MEDIA-SEQUENCE:{sequence}",
-        ]
-
-        for i in range(6):
-            fake_sequence = sequence + i
-
-            lines.extend(
-                [
-                    f"#EXTINF:{segment_duration}.0,",
-                    f"/offline/media_{fake_sequence}.ts",
-                ]
-            )
-
-        lines.append("")
-
-        playlist = "\n".join(lines)
-        content = playlist.encode("utf-8")
-
-        self.send_response(200)
-        self.send_header(
-            "Content-Type",
-            "application/vnd.apple.mpegurl",
-        )
-        self.send_header(
-            "Cache-Control",
-            "no-cache",
-        )
-        self.send_header(
-            "Content-Length",
-            str(len(content)),
-        )
-        self.end_headers()
-        self.wfile.write(content)
 
 
 def start_server(server_config: dict) -> None:
@@ -234,5 +223,6 @@ def start_server(server_config: dict) -> None:
     log("  /playlist.m3u")
     log("  /guide.xml")
     log("  /channel/<number>")
+    log("  /offline/<channel>/<filename>")
 
     server.serve_forever()
