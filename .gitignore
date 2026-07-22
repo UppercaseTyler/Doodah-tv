@@ -1,3 +1,7 @@
+# Runtime service data
+threadfin/
+dispatcharr/
+
 # macOS
 .DS_Store
 
@@ -12,5 +16,5 @@ __pycache__/
 # Generated files
 output/
 
-# Ozolio test
+# Local test files
 test_ozolio.py

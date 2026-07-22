@@ -10,31 +10,6 @@ services:
       - ./output:/app/output
     restart: unless-stopped
 
-  threadfin:
-    image: fyb3roptik/threadfin:1.2.35
-    container_name: threadfin
-    depends_on:
-      - doodah-tv
-    
-    # Give Doodah time to generate playlist.m3u and guide.xml
-    # Doodah generates playlist.m3u and guide.xml at startup.
-    # Delay Threadfin briefly so it doesn't fetch stale/cached data.
-    entrypoint: >
-      sh -c "sleep 5 &&
-      $${THREADFIN_BIN}/threadfin
-      -port=$${THREADFIN_PORT}
-      -bind=$${THREADFIN_BIND_IP_ADDRESS}
-      -config=$${THREADFIN_CONF}
-      -debug=$${THREADFIN_DEBUG}"
-    ports:
-      - "34400:34400"
-    environment:
-      - TZ=America/New_York
-    volumes:
-      - ./threadfin/conf:/home/threadfin/conf
-      - ./threadfin/temp:/tmp/threadfin
-      - ./output:/doodah-output:ro
-    restart: unless-stopped
 
   dispatcharr:
     image: ghcr.io/dispatcharr/dispatcharr:latest
@@ -43,6 +18,7 @@ services:
       - "9191:9191"
     volumes:
       - ./dispatcharr:/data
+      - ./dispatcharr-patches/manager.py:/app/apps/proxy/live_proxy/input/manager.py:ro
     restart: unless-stopped
     depends_on:
       - doodah-tv

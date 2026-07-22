@@ -29,7 +29,7 @@ Threadfin source of XMLTV: http://localhost:34400/xmltv/threadfin.xml
 
 Update Playlist
 Update XMLTV
-Verify the channel is assigned to the correct XMLTV source in Threadfin
+Verify the channel is assigned to the correct XMLTV source in IPTV bridge
 Regenerate XEPG
 Refresh the Plex guide
 
