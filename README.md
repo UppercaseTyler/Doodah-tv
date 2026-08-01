@@ -1,79 +1,186 @@
+# Doodah-TV 🦒
 
-# Doodah TV
+Doodah-TV is a lightweight Python application that turns live internet streams into IPTV channels for use with Plex and other IPTV clients.
 
-> Turn public livestreams into IPTV channels for Plex, Jellyfin, Emby, and other media servers.
+It was originally built for a very important use case: putting live zoo cameras on the television for my daughter.
 
-## Overview
+Doodah resolves provider-specific stream URLs, generates an M3U playlist and XMLTV guide, and provides a stable channel URL that an IPTV bridge can use. When a provider is unavailable, Doodah can serve a local offline fallback instead.
 
-Doodah TV is a lightweight IPTV backend that turns live internet streams into television channels. It aggregates streams from multiple providers, resolves dynamic URLs (such as YouTube live streams), generates M3U playlists and XMLTV guides, and exposes stable channel endpoints for Plex, Jellyfin, Threadfin, and other IPTV clients.
+Doodah is intentionally **not** a media server and does not play a local media library.
 
-For Doodah TV playlists, Threadfin should use:
+## How it works
 
-EPG Source: XEPG
+```text
+Plex / IPTV client
+        ↓
+IPTV bridge (Dispatcharr, Threadfin, etc)
+        ↓
+Doodah-TV /channel/<number>
+        ↓
+provider resolution
+   ↙             ↘
+live             unavailable
+ ↓                   ↓
+upstream URL      offline HLS
+```
 
-Threadfin source of XMLTV: http://localhost:34400/xmltv/threadfin.xml
+For live streams, Doodah resolves the current provider URL and redirects the IPTV bridge to it. Live media then flows from the provider through the bridge; Doodah does not permanently proxy the video.
 
 ## Features
 
-- Live IPTV channel generation
+- M3U playlist generation
 - XMLTV guide generation
-- Stable HTTP channel endpoints
-- Provider architecture for multiple stream types
-- Static HLS support
-- YouTube Live support via yt-dlp
-- Automatic YouTube URL resolution
+- Stable `/channel/<number>` URLs
+- Provider-specific stream resolution
+- HLS streams
+- YouTube livestreams
+- Ozolio cameras
+- Per-channel enable/disable configuration
+- Local offline fallback ("Sleeping Giraffe")
 - Docker deployment
-- Plex and Threadfin compatible
+- Designed to remain lightweight and bridge-agnostic
 
-## Added a channel but it doesn't appear in Plex?
+## Channel configuration
 
-Update Playlist
-Update XMLTV
-Verify the channel is assigned to the correct XMLTV source in IPTV bridge
-Regenerate XEPG
-Refresh the Plex guide
+Channels are configured in `config.yaml`.
 
-## Goals
+A typical channel looks like:
 
-* Support multiple stream providers (Ozolio, YouTube Live, direct HLS, and more)
-* Generate standards-compliant M3U playlists
-* Generate XMLTV guide data
-* Be lightweight and easy to configure
-* Work with existing IPTV software such as Threadfin
-* Keep provider-specific logic isolated from the core application
+```yaml
+channels:
+  - name: Oakland Zoo Giraffes
+    number: 101
+    enabled: true
+    source: ozolio
+    url: https://www.ozolio.com/explore/EXAMPLE
+    guide_title: Oakland Zoo Giraffes
+    guide_description: Live giraffe habitat from the Oakland Zoo.
+```
 
-## Non-Goals (for now)
+Channel fields are intentionally ordered from user-facing identity to implementation details.
 
-* Replace Plex, Jellyfin, or Emby
-* Replace IPTV tuner software
-* Record or permanently archive streams
-* Control PTZ (pan/tilt/zoom) cameras
+### Core channel fields
 
+| Field | Required | Description |
+| --- | --- | --- |
+| `name` | Yes | Human-readable channel name. |
+| `number` | Yes | IPTV channel number. Must be unique. |
+| `enabled` | Yes | Whether the channel is included in generated output. |
+| `source` | Yes | Provider used to resolve the stream. |
+| `url` | Yes | Provider page or stream URL. |
+| `guide_title` | No | Programme title used by the current simple XMLTV guide. |
+| `guide_description` | No | Programme description shown in the XMLTV guide. |
+| `guide_style` | No | Options: simple, dayparts, custom |
 
-## Roadmap
+### Supported providers
 
-### Phase 1
+Current providers:
 
-* [x] Support direct HLS streams
-* [x] Generate M3U playlists
-* [x] Import channels into Plex via an IPTV bridge
+- HLS
+- YouTube
+- Ozolio
 
-### Phase 2
+Planned providers:
 
-* [ ] Automatic Ozolio stream discovery
-* [x] YouTube Live support
-* [x] Stream health monitoring
-* [x] Automatic reconnection
+- EarthCam
 
-### Future Ideas
+### Guide style specific fields
 
-* [x] Rolling pause/rewind buffer
-* [ ] Stream failover
-* [ ] Rotating channels
-* [ ] Web management interface
-* [ ] Additional stream providers
+| Field | Required | Description |
+| --- | --- | --- |
+| `dayparts_name` | No | Friendly location name used in Dayparts titles, such as `Morning at Oakland Zoo`. |
+| `dayparts_theme` | No | Options: `standard`, `fantasy`, `aquarium`, `random` |
+| `timezone` | No | IANA timezone (for example `America/Denver`) used to match Dayparts to the camera's local time. |
 
-## Why "Doodah TV"?
+## Server configuration
+
+```yaml
+server:
+  bind: 0.0.0.0
+  host: 192.168.1.100
+  port: 8090
+```
+
+`host` should be an address that your IPTV bridge can use to reach Doodah.
+
+Doodah exposes resources including:
+
+```text
+/playlist.m3u
+/guide.xml
+/channel/<number>
+/offline/<channel>/<file>
+```
+
+## IPTV bridge
+
+Doodah is designed to sit behind an IPTV bridge that presents its channels to Plex or another TV client.
+
+Dispatcharr is the current recommended bridge for the Doodah development setup. Doodah itself is deliberately designed so that core provider resolution and offline behavior do not depend on a particular bridge.
+
+## Offline fallback
+
+When Doodah cannot resolve a configured provider, it can redirect the channel to a local HLS fallback generated from the bundled offline media.
+
+This is the "Sleeping Giraffe" path.
+
+The fallback belongs to Doodah rather than to the IPTV bridge. Automatic detection of provider recovery is planned but is not part of the current health behavior yet.
+
+## Guide
+
+Doodah currently generates a simple XMLTV guide using repeating one-hour programme blocks.
+
+The guide system is being expanded around three styles:
+
+- `simple` — current/default one-hour programme blocks
+- `dayparts` — planned time-of-day programme titles such as Morning, Afternoon, Twilight, and Overnight
+- `custom` — planned user-defined programme exceptions over an automatic baseline
+
+Dayparts and Custom should be treated as planned features until they are implemented.
+
+## Running with Docker
+
+Doodah is intended to run with Docker Compose.
+
+Before starting it:
+
+1. Edit `config.yaml` for your network and channels.
+2. Make sure the configured host address is reachable by your IPTV bridge.
+3. Start the stack with Docker Compose.
+4. Configure your IPTV bridge to use Doodah's playlist and XMLTV output.
+5. Add the bridge as a tuner in Plex or your IPTV client.
+
+## Project status
+
+Doodah-TV is under active development.
+
+The core provider-resolution, playlist, guide, and offline-fallback architecture is working. Guide improvements and automatic recovery from offline fallback are active roadmap items.
+
+See `architecture.md` for the design principles and internal component responsibilities.
+
+## Troubleshooting
+
+### Channel doesn't appear in Plex
+
+1. Update the playlist in your IPTV bridge.
+2. Update the XMLTV source.
+3. Verify the channel is assigned to the correct XMLTV source.
+4. Regenerate the bridge guide/XEPG.
+5. Refresh the Plex guide.
+
+### Resolving the wrong video (or no video) from Ozolio
+
+If an Ozolio page contains multiple embedded cameras, add the camera's object ID to your channel configuration:
+
+```yaml
+object: CAMERA_OBJECT_ID
+```
+
+The object ID can usually be found using your browser's developer tools.
+
+If that still doesn't work, the stream may use an Ozolio implementation that Doodah does not support yet.
+
+## Why "Doodah-TV"?
 
 Scarlett, my daughter, calls giraffes "doodahs." This project started as a way to preserve one of her favorite zoo livestreams after it disappeared from YouTube, and eventually grew into the idea of turning public livestreams into a browsable television experience.
 
