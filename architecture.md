@@ -52,7 +52,7 @@ HTTP redirect
 IPTV bridge connects to live upstream
 ```
 
-The redirect is an important architectural boundary. Once Doodah has resolved the provider, it hands the playable URL to the bridge. Doodah does not continuously receive and retransmit the live media.
+The redirect is an important architectural boundary. Once Doodah has resolved the provider, it hands the playable URL to the bridge. For YouTube master playlists, it instead returns a small master playlist containing one selected H.264 rendition and its matching AAC audio group, with absolute upstream URLs. Selecting playlist metadata does not put Doodah in the live media path: the bridge fetches the media playlists and segments directly from the provider.
 
 ## Channel request flow
 

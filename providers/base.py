@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -10,6 +11,7 @@ class ResolvedStream:
     url: str
     guide_title: str
     guide_description: str
+    hls_manifest: Optional[str] = None
 
 
 class Provider:

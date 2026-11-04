@@ -1,3 +1,4 @@
 pyyaml
 yt-dlp
 requests
+m3u8==6.0.0

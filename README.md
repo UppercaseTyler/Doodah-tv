@@ -26,6 +26,13 @@ upstream URL      offline HLS
 
 For live streams, Doodah resolves the current provider URL and redirects the IPTV bridge to it. Live media then flows from the provider through the bridge; Doodah does not permanently proxy the video.
 
+For YouTube master playlists, Doodah returns a small HLS master playlist with
+the highest-resolution H.264 rendition and its matching AAC audio group.
+This handles both muxed and separate audio/video layouts without exposing all
+alternate qualities to the bridge. The bridge fetches the selected playlists
+and media directly from YouTube. If no compatible rendition is available,
+resolution fails and the normal offline fallback is used.
+
 ## Features
 
 - M3U playlist generation

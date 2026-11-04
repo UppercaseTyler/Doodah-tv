@@ -145,6 +145,16 @@ class DoodahRequestHandler(BaseHTTPRequestHandler):
                     f"resolved={stream.url}"
                 )
 
+                if stream.hls_manifest is not None:
+                    content = stream.hls_manifest.encode("utf-8")
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/vnd.apple.mpegurl")
+                    self.send_header("Content-Length", str(len(content)))
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    self.wfile.write(content)
+                    return
+
                 self.send_response(302)
                 self.send_header("Location", stream.url)
                 self.end_headers()
