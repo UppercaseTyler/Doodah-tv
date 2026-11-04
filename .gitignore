@@ -18,3 +18,11 @@ output/
 
 # Local test files
 test_ozolio.py
+
+# Local configuration and deployment backups
+config.yaml
+config.yaml.backup-*
+.env
+.env.*
+!.env.example
+*.log

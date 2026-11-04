@@ -1,0 +1,13 @@
+.git
+.DS_Store
+.venv
+__pycache__
+*.pyc
+config.yaml
+config.yaml.backup-*
+.env
+.env.*
+output
+threadfin
+dispatcharr
+*.log

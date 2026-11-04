@@ -118,21 +118,21 @@ The offline manager owns the lifecycle of local fallback media. It should not be
 
 ## IPTV bridge responsibility
 
-The IPTV bridge handles transport between Doodah's channel endpoints and the final TV client. Dispatcharr is the recommended bridge in the current development deployment.
+The IPTV bridge handles transport between Doodah's channel endpoints and the final TV client. Dispatcharr is used in the development setup and is the recommended starting point. Doodah remains bridge-agnostic and should work with any compatible IPTV bridge. Plex can fetch Doodah's XMLTV guide directly, independently of the bridge used for channel delivery.
 
 The bridge is responsible for maintaining playback, buffering/transcoding when required, detecting transport failure, and reconnecting the configured channel URL.
 
 Doodah remains responsible for provider resolution, choosing live versus fallback media, and generating its playlist and guide.
 
-## Dispatcharr reconnect patch
+## Upstream reconnect fix
 
 Doodah currently depends on reliable reconnection to the original configured `/channel/<number>` URL after an upstream stream failure.
 
 A reconnect issue was identified in Dispatcharr where the health monitor could set `needs_reconnect`, while `_process_stream_data()` did not include that flag in its loop-exit conditions. This could prevent control from returning to Dispatcharr's existing reconnect path.
 
-Doodah's deployment currently carries the corresponding small patch against a pinned Dispatcharr image while the upstream contribution is under review.
+The issue was reported upstream with a proposed patch. The maintainer implemented the complete fix in development and closed the contribution as fixed. The temporary bundled patch and image pin have been removed from this repository; the optional Compose service uses unmodified Dispatcharr.
 
-This is a deployment compatibility patch, not Doodah business logic.
+Reliable bridge reconnection remains a deployment requirement, not Doodah business logic.
 
 ## Guide architecture
 

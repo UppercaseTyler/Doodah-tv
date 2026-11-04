@@ -1,0 +1,46 @@
+# Copy to config.yaml and edit for your network and cameras.
+# config.yaml is local configuration; do not commit it.
+server:
+  bind: 0.0.0.0
+  # Address reachable by your clients/bridge, not the container's bind address.
+  host: 192.168.1.100
+  port: 8090
+
+# Keep channel numbers unique. Supported sources: hls, youtube, ozolio.
+# Replace the example URLs/object IDs before enabling a channel.
+channels:
+  # Simple is the default when guide_style is omitted or empty.
+  - name: Example Live Camera
+    number: 101
+    enabled: false
+    source: hls
+    url: https://example.com/live/playlist.m3u8
+    guide_style: simple
+    guide_description: Live view from an example camera.
+
+  - name: Example Zoo Camera
+    number: 102
+    enabled: false
+    source: ozolio
+    url: https://example.com/zoo/live
+    # Select a specific camera when the page contains multiple Ozolio embeds.
+    object: EMB_REPLACE_ME
+    guide_style: dayparts
+    dayparts_name: the Example Zoo
+    dayparts_theme: standard
+    timezone: America/New_York
+    guide_description: Live view from the Example Zoo.
+
+# Dayparts use Overnight (22:00–07:00), Morning (07:00–11:00),
+# Midday (11:00–15:00), Afternoon (15:00–18:00), Evening (18:00–20:00),
+# and Twilight (20:00–22:00), in the channel's timezone.
+# dayparts_name defaults to the channel name.
+# dayparts_theme: standard | fantasy | poetic | aquarium | bananas | random
+# Theme defaults to standard. Random chooses standard/fantasy/poetic using
+# a stable hash of the date, channel number, and daypart.
+# timezone defaults to America/New_York.
+# Invalid guide styles, themes, and unknown timezones warn and fall back.
+# guide_description applies to both guide styles.
+# Optional logo: filename under assets/logos/ (defaults to doodah-logo.png).
+# YouTube example URL: https://www.youtube.com/watch?v=REPLACE_ME
+# Ozolio also accepts embed URLs or Explore URLs instead of a host page.

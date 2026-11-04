@@ -12,13 +12,12 @@ services:
 
 
   dispatcharr:
-    image: ghcr.io/dispatcharr/dispatcharr@sha256:f2b5ea3128b0513feb07efee7539ad546f3ba3a9095f19936f446f75b8baa894
+    image: ghcr.io/dispatcharr/dispatcharr:latest
     container_name: dispatcharr
     ports:
       - "9191:9191"
     volumes:
       - ./dispatcharr:/data
-      - ./dispatcharr-patches/manager.py:/app/apps/proxy/live_proxy/input/manager.py:ro
     restart: unless-stopped
     depends_on:
       - doodah-tv

@@ -42,7 +42,15 @@ For live streams, Doodah resolves the current provider URL and redirects the IPT
 
 ## Channel configuration
 
-Channels are configured in `config.yaml`.
+Channels are configured in a local `config.yaml`. Create it from the committed example:
+
+```bash
+cp config.example.yaml config.yaml
+```
+
+Edit the server address and replace the placeholder cameras before enabling them.
+The live config and deployment backups are ignored by Git and excluded from Docker builds.
+Keep a separate backup of your config; Git does not preserve it.
 
 A typical channel looks like:
 
@@ -53,7 +61,7 @@ channels:
     enabled: true
     source: ozolio
     url: https://www.ozolio.com/explore/EXAMPLE
-    guide_title: Oakland Zoo Giraffes
+    guide_style: simple
     guide_description: Live giraffe habitat from the Oakland Zoo.
 ```
 
@@ -68,9 +76,8 @@ Channel fields are intentionally ordered from user-facing identity to implementa
 | `enabled` | Yes | Whether the channel is included in generated output. |
 | `source` | Yes | Provider used to resolve the stream. |
 | `url` | Yes | Provider page or stream URL. |
-| `guide_title` | No | Programme title used by the current simple XMLTV guide. |
 | `guide_description` | No | Programme description shown in the XMLTV guide. |
-| `guide_style` | No | Options: simple, dayparts, custom |
+| `guide_style` | No | Options: `simple` (default), `dayparts` |
 
 ### Supported providers
 
@@ -89,7 +96,7 @@ Planned providers:
 | Field | Required | Description |
 | --- | --- | --- |
 | `dayparts_name` | No | Friendly location name used in Dayparts titles, such as `Morning at Oakland Zoo`. |
-| `dayparts_theme` | No | Options: `standard`, `fantasy`, `aquarium`, `random` |
+| `dayparts_theme` | No | Options: `standard` (default), `fantasy`, `poetic`, `aquarium`, `bananas`, `random` |
 | `timezone` | No | IANA timezone (for example `America/Denver`) used to match Dayparts to the camera's local time. |
 
 ## Server configuration
@@ -116,7 +123,8 @@ Doodah exposes resources including:
 
 Doodah is designed to sit behind an IPTV bridge that presents its channels to Plex or another TV client.
 
-Dispatcharr is the current recommended bridge for the Doodah development setup. Doodah itself is deliberately designed so that core provider resolution and offline behavior do not depend on a particular bridge.
+Dispatcharr is the bridge used in Doodah's development setup and the recommended starting point. Doodah is bridge-agnostic and should work with any compatible IPTV bridge; its provider resolution and offline behavior do not depend on Dispatcharr.
+Plex can fetch XMLTV directly from Doodah at `http://<host>:8090/guide.xml`, independently of the bridge used for channel delivery.
 
 ## Offline fallback
 
@@ -128,15 +136,18 @@ The fallback belongs to Doodah rather than to the IPTV bridge. Automatic detecti
 
 ## Guide
 
-Doodah currently generates a simple XMLTV guide using repeating one-hour programme blocks.
+Doodah generates seven days of XMLTV with two supported styles:
 
-The guide system is being expanded around three styles:
+- `simple` — default repeating one-hour blocks titled with the channel name.
+- `dayparts` — time-of-day titles using the channel's timezone and selected theme.
 
-- `simple` — current/default one-hour programme blocks
-- `dayparts` — planned time-of-day programme titles such as Morning, Afternoon, Twilight, and Overnight
-- `custom` — planned user-defined programme exceptions over an automatic baseline
+Overnight remains one continuous programme from 22:00 to 07:00 across midnight.
+The `random` theme deterministically chooses `standard`, `fantasy`, or `poetic`
+for each date/channel/daypart; `aquarium` and `bananas` are explicit-only.
+See `config.example.yaml` for all Dayparts options and defaults.
 
-Dayparts and Custom should be treated as planned features until they are implemented.
+The playlist and guide are generated at startup. After a config edit, restart
+Doodah to regenerate both; automatic periodic guide refresh is not implemented yet.
 
 ## Running with Docker
 
@@ -144,10 +155,10 @@ Doodah is intended to run with Docker Compose.
 
 Before starting it:
 
-1. Edit `config.yaml` for your network and channels.
+1. Copy `config.example.yaml` to `config.yaml`, then edit it for your network and channels.
 2. Make sure the configured host address is reachable by your IPTV bridge.
-3. Start the stack with Docker Compose.
-4. Configure your IPTV bridge to use Doodah's playlist and XMLTV output.
+3. Start Doodah with `docker compose up -d --build doodah-tv`. The supplied Compose file also includes an optional, unmodified Dispatcharr service; it is not required to run Doodah.
+4. Configure your IPTV bridge to use Doodah's playlist. Configure Plex or your guide consumer to fetch Doodah's XMLTV directly if desired.
 5. Add the bridge as a tuner in Plex or your IPTV client.
 
 ## Project status
@@ -165,7 +176,7 @@ See `architecture.md` for the design principles and internal component responsib
 1. Update the playlist in your IPTV bridge.
 2. Update the XMLTV source.
 3. Verify the channel is assigned to the correct XMLTV source.
-4. Regenerate the bridge guide/XEPG.
+4. If your bridge manages the guide, regenerate its guide/XEPG.
 5. Refresh the Plex guide.
 
 ### Resolving the wrong video (or no video) from Ozolio
@@ -185,3 +196,20 @@ If that still doesn't work, the stream may use an Ozolio implementation that Doo
 Scarlett, my daughter, calls giraffes "doodahs." This project started as a way to preserve one of her favorite zoo livestreams after it disappeared from YouTube, and eventually grew into the idea of turning public livestreams into a browsable television experience.
 
 I hope it will help other families discover their favorite toddler tv channels.
+
+## License
+
+Copyright (c) 2026 Tyler Kimbley.
+
+Doodah-TV is licensed under the GNU General Public License, version 3 only
+(SPDX: `GPL-3.0-only`). This includes the project-created logo and offline
+fallback artwork and video bundled in this repository.
+
+You may use, modify, and redistribute Doodah-TV under the GPLv3, including
+commercially. Distribution of covered modified versions must comply with the
+GPLv3's source-code and licensing requirements. The software comes without
+warranty. See [LICENSE](LICENSE) for the full terms.
+
+External services, livestream content, and separately installed software such
+as Dispatcharr retain their respective licenses and terms; Doodah's license
+does not grant rights to that content or software.
