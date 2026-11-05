@@ -1,3 +1,6 @@
+import logging
+import threading
+
 import yaml
 
 from playlist import write_playlist
@@ -5,6 +8,7 @@ from providers.hls import HLSProvider
 from providers.youtube import YouTubeProvider
 from providers.ozolio import OzolioProvider
 from guide import write_guide
+from guide_refresh import refresh_guide_at_midnight
 from server import start_server
 
 
@@ -38,6 +42,7 @@ def resolve_channels(config: dict):
 
 
 def main():
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     config = load_config()
     channels = [channel for channel in config["channels"] if channel.get("enabled", True)]
 
@@ -47,7 +52,18 @@ def main():
     print(f"Generated {playlist_path}")
     print(f"Generated {guide_path}")
 
-    start_server(config["server"])
+    stop_event = threading.Event()
+    guide_worker = threading.Thread(
+        target=refresh_guide_at_midnight, args=(channels, stop_event),
+        name="guide-refresh", daemon=True,
+    )
+    guide_worker.start()
+
+    try:
+        start_server(config["server"])
+    finally:
+        stop_event.set()
+        guide_worker.join(timeout=5)
 
 if __name__ == "__main__":
     main()

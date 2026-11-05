@@ -153,8 +153,15 @@ The `random` theme deterministically chooses `standard`, `fantasy`, or `poetic`
 for each date/channel/daypart; `aquarium` and `bananas` are explicit-only.
 See `config.example.yaml` for all Dayparts options and defaults.
 
-The playlist and guide are generated at startup. After a config edit, restart
-Doodah to regenerate both; automatic periodic guide refresh is not implemented yet.
+The playlist and guide are generated at startup. The guide is then regenerated
+daily at midnight in `America/New_York`, independently of channel timezones.
+Each refresh uses the startup channel configuration. After a config edit,
+restart Doodah to regenerate both the playlist and guide with the new settings.
+
+Guide refreshes publish a complete, validated XMLTV file using an atomic
+replacement. If a scheduled refresh fails, Doodah logs the error, retains the
+previous guide, and retries the next midnight. Plex and other guide consumers
+fetch the file on their own schedules; generation does not trigger an import.
 
 ## Running with Docker
 

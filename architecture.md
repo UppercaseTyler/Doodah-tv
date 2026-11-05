@@ -138,6 +138,17 @@ Reliable bridge reconnection remains a deployment requirement, not Doodah busine
 
 Guide generation is separate from live playback.
 
+`main()` generates the initial guide before starting HTTP service, then starts
+one daemon worker to refresh it at midnight in `America/New_York`. The worker
+uses the startup channel snapshot, recalculates the next local midnight after
+each attempt, and accounts for daylight-saving transitions. An event allows
+normal application exit to interrupt its wait.
+
+`write_guide()` generates and validates XMLTV in memory, writes a temporary
+file in the output directory, and publishes it with `os.replace()`. A failed
+refresh preserves the previous file and is logged; the worker retries the next
+midnight. This schedule is independent of downstream guide import schedules.
+
 ```text
 config.yaml
     ↓

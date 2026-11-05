@@ -1,6 +1,8 @@
 import hashlib
 import os
+import tempfile
 import warnings
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, time
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from xml.sax.saxutils import escape
@@ -319,8 +321,23 @@ def write_guide(streams):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     guide = generate_xmltv(streams)
+    ET.fromstring(guide)
+    temporary_path = None
 
-    with open(GUIDE_FILE, "w", encoding="utf-8") as file:
-        file.write(guide)
+    try:
+        # Same directory keeps replacement on one filesystem. Readers retain
+        # the old complete file until the new complete file is published.
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=OUTPUT_DIR,
+            prefix=".guide-", suffix=".xml.tmp", delete=False,
+        ) as file:
+            temporary_path = file.name
+            file.write(guide)
+
+        os.chmod(temporary_path, 0o644)
+        os.replace(temporary_path, GUIDE_FILE)
+    finally:
+        if temporary_path is not None and os.path.exists(temporary_path):
+            os.unlink(temporary_path)
 
     return GUIDE_FILE
