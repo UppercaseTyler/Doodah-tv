@@ -86,6 +86,25 @@ Channel fields are intentionally ordered from user-facing identity to implementa
 | `guide_description` | No | Programme description shown in the XMLTV guide. |
 | `guide_style` | No | Options: `simple` (default), `dayparts` |
 
+### Channel logos
+
+The M3U playlist and XMLTV guide include the same channel logo. By default,
+channels use the bundled Doodah logo. To use a zoo's logo, put an image in
+`assets/logos/` and add its filename to the channel:
+
+```yaml
+logo: toledo-zoo.png
+```
+
+An omitted or blank `logo`, or a missing local image, falls back to
+`doodah-logo.png`. Full HTTP/HTTPS image URLs are also supported, but remote
+images are used as supplied and cannot automatically fall back if their host
+is unavailable. HTTPS URLs may be needed by some guide clients; bundled
+images are served over Doodah's HTTP endpoint. Use images you have permission
+to redistribute. Local logo changes require rebuilding the Docker image;
+config-only changes require restarting Doodah. Refresh your guide consumer to
+import updated logo metadata; client caching can delay visible changes.
+
 ### Supported providers
 
 Current providers:

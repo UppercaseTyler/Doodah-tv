@@ -5,7 +5,9 @@ import warnings
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, time
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape, quoteattr
+
+from logos import channel_logo_url
 
 
 OUTPUT_DIR = "output"
@@ -271,7 +273,7 @@ def generate_dayparts_programmes(channel: dict) -> list[dict]:
     return programmes
 
 
-def generate_xmltv(channels):
+def generate_xmltv(channels, server_config):
     lines = ['<?xml version="1.0" encoding="UTF-8"?>']
     lines.append('<tv generator-info-name="Doodah TV">')
 
@@ -281,6 +283,8 @@ def generate_xmltv(channels):
 
         lines.append(f'  <channel id="{channel_id}">')
         lines.append(f"    <display-name>{name}</display-name>")
+        logo_url = channel_logo_url(channel, server_config)
+        lines.append(f"    <icon src={quoteattr(logo_url)} />")
         lines.append("  </channel>")
 
     for channel in channels:
@@ -317,10 +321,10 @@ def generate_xmltv(channels):
     return "\n".join(lines) + "\n"
 
 
-def write_guide(streams):
+def write_guide(streams, server_config):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    guide = generate_xmltv(streams)
+    guide = generate_xmltv(streams, server_config)
     ET.fromstring(guide)
     temporary_path = None
 

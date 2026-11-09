@@ -47,14 +47,14 @@ def main():
     channels = [channel for channel in config["channels"] if channel.get("enabled", True)]
 
     playlist_path = write_playlist(channels, config["server"])
-    guide_path = write_guide(channels)
+    guide_path = write_guide(channels, config["server"])
 
     print(f"Generated {playlist_path}")
     print(f"Generated {guide_path}")
 
     stop_event = threading.Event()
     guide_worker = threading.Thread(
-        target=refresh_guide_at_midnight, args=(channels, stop_event),
+        target=refresh_guide_at_midnight, args=(channels, config["server"], stop_event),
         name="guide-refresh", daemon=True,
     )
     guide_worker.start()

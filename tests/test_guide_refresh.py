@@ -11,6 +11,9 @@ import guide
 from guide_refresh import refresh_guide_at_midnight, seconds_until_midnight
 
 
+SERVER = {"host": "192.0.2.1", "port": 8090}
+
+
 CHANNELS = [
     dict(name="Simple Camera", number=101, enabled=True),
     dict(name="Dayparts Camera", number=102, enabled=True,
@@ -46,9 +49,9 @@ class MidnightTests(unittest.TestCase):
         stop.is_set.return_value = False
         stop.wait.side_effect = [False, False, True]
         with self.assertLogs("guide_refresh", level="INFO") as logs:
-            refresh_guide_at_midnight(CHANNELS, stop)
+            refresh_guide_at_midnight(CHANNELS, SERVER, stop)
         self.assertEqual(stop.wait.call_args_list, [call(10), call(20), call(30)])
-        self.assertEqual(write.call_args_list, [call(CHANNELS), call(CHANNELS)])
+        self.assertEqual(write.call_args_list, [call(CHANNELS, SERVER), call(CHANNELS, SERVER)])
         self.assertTrue(any("disk full" in line for line in logs.output))
         self.assertTrue(any("refresh complete" in line for line in logs.output))
 
@@ -57,7 +60,7 @@ class MidnightTests(unittest.TestCase):
         stop = threading.Event()
         with patch("guide_refresh.seconds_until_midnight", return_value=86400):
             worker = threading.Thread(target=refresh_guide_at_midnight,
-                                      args=(CHANNELS, stop), daemon=True)
+                                      args=(CHANNELS, SERVER, stop), daemon=True)
             worker.start()
             stop.set()
             worker.join(timeout=1)
@@ -81,7 +84,7 @@ class AtomicGuideTests(unittest.TestCase):
         old = '<tv generator-info-name="old"/>\n'
         self.path.write_text(old)
         with self.path.open() as reader:
-            guide.write_guide(CHANNELS)
+            guide.write_guide(CHANNELS, SERVER)
             self.assertEqual(reader.read(), old)
         root = ET.parse(self.path).getroot()
         self.assertEqual(len(root.findall("channel")), 2)
@@ -92,7 +95,7 @@ class AtomicGuideTests(unittest.TestCase):
         self.path.write_text("old guide")
         with patch("guide.os.replace", side_effect=OSError("disk error")):
             with self.assertRaisesRegex(OSError, "disk error"):
-                guide.write_guide(CHANNELS)
+                guide.write_guide(CHANNELS, SERVER)
         self.assertEqual(self.path.read_text(), "old guide")
         self.assertEqual(list(self.root.iterdir()), [self.path])
 
@@ -100,7 +103,7 @@ class AtomicGuideTests(unittest.TestCase):
         self.path.write_text("old guide")
         with patch("guide.generate_xmltv", return_value="<tv>"):
             with self.assertRaises(ET.ParseError):
-                guide.write_guide(CHANNELS)
+                guide.write_guide(CHANNELS, SERVER)
         self.assertEqual(self.path.read_text(), "old guide")
         self.assertEqual(list(self.root.iterdir()), [self.path])
 
@@ -108,7 +111,7 @@ class AtomicGuideTests(unittest.TestCase):
         fixed = datetime(2026, 11, 4, 17, tzinfo=timezone.utc)
         with patch("guide.datetime", wraps=datetime) as clock:
             clock.now.side_effect = lambda zone: fixed.astimezone(zone)
-            guide.write_guide(CHANNELS)
+            guide.write_guide(CHANNELS, SERVER)
         root = ET.parse(self.path).getroot()
         overnight = root.findall("programme[@channel='102']")[0]
         self.assertEqual(overnight.get("start"), "20261103220000 -0800")
@@ -121,9 +124,9 @@ class AtomicGuideTests(unittest.TestCase):
         stop = threading.Event()
         complete = threading.Event()
 
-        def write(channels):
+        def write(channels, server_config):
             try:
-                return guide.write_guide(channels)
+                return guide.write_guide(channels, server_config)
             finally:
                 stop.set()
                 complete.set()
@@ -131,7 +134,7 @@ class AtomicGuideTests(unittest.TestCase):
         with patch("guide_refresh.seconds_until_midnight", return_value=0.05), \
                 patch("guide_refresh.write_guide", side_effect=write):
             worker = threading.Thread(target=refresh_guide_at_midnight,
-                                      args=(CHANNELS, stop), daemon=True)
+                                      args=(CHANNELS, SERVER, stop), daemon=True)
             worker.start()
             self.assertTrue(complete.wait(2))
             worker.join(timeout=1)
@@ -149,7 +152,7 @@ class StartupTests(unittest.TestCase):
     def test_initial_generation_precedes_worker_and_http_server(
             self, config, playlist, write, thread, server):
         import main
-        config.return_value = {"channels": CHANNELS, "server": {"port": 8090}}
+        config.return_value = {"channels": CHANNELS, "server": SERVER}
         order = Mock()
         order.attach_mock(write, "write")
         order.attach_mock(thread.return_value.start, "worker_start")
@@ -157,9 +160,9 @@ class StartupTests(unittest.TestCase):
         main.main()
         self.assertEqual([c[0] for c in order.mock_calls],
                          ["write", "worker_start", "serve"])
-        self.assertEqual(write.call_args, call(CHANNELS))
+        self.assertEqual(write.call_args, call(CHANNELS, SERVER))
         self.assertTrue(thread.call_args.kwargs["daemon"])
-        event = thread.call_args.kwargs["args"][1]
+        event = thread.call_args.kwargs["args"][2]
         self.assertTrue(event.is_set())
         thread.return_value.join.assert_called_once_with(timeout=5)
 

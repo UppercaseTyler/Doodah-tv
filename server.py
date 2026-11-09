@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 import atexit
 import mimetypes
 
@@ -62,13 +62,19 @@ class DoodahRequestHandler(BaseHTTPRequestHandler):
             return
 
         if parsed_path.startswith("/logos/"):
-            filename = parsed_path.replace("/logos/", "")
+            filename = unquote(parsed_path.removeprefix("/logos/"))
+            logo_path = LOGO_DIR / filename
+            try:
+                logo_path.resolve().relative_to(LOGO_DIR.resolve())
+            except ValueError:
+                self.send_error(403, "Invalid logo path")
+                return
             content_type = (
                 mimetypes.guess_type(filename)[0]
                 or "application/octet-stream"
             )
             self.serve_file(
-                LOGO_DIR / filename,
+                logo_path,
                 content_type,
             )
             return

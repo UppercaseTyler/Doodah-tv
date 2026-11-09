@@ -1,9 +1,9 @@
 import os
 
+from logos import channel_logo_url
 
 OUTPUT_DIR = "output"
 PLAYLIST_FILE = os.path.join(OUTPUT_DIR, "playlist.m3u")
-DEFAULT_LOGO = "doodah-logo.png"
 
 
 def generate_m3u(channels, server_config):
@@ -15,10 +15,9 @@ def generate_m3u(channels, server_config):
     for channel in channels:
         number = channel["number"]
         name = channel["name"]
-        logo = channel.get("logo", DEFAULT_LOGO)
 
         channel_url = f"http://{host}:{port}/channel/{number}"
-        logo_url = f"http://{host}:{port}/logos/{logo}"
+        logo_url = channel_logo_url(channel, server_config)
 
         lines.append(
             f'#EXTINF:-1 '

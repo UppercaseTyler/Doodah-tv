@@ -41,6 +41,9 @@ channels:
 # timezone defaults to America/New_York.
 # Invalid guide styles, themes, and unknown timezones warn and fall back.
 # guide_description applies to both guide styles.
-# Optional logo: filename under assets/logos/ (defaults to doodah-logo.png).
+# Optional per-channel logo: filename under assets/logos/ or a full HTTP(S) URL.
+# Example: logo: toledo-zoo.png
+# Missing/blank logo or a missing local file uses doodah-logo.png.
+# Remote URLs are used as supplied; unreachable remote images cannot fall back.
 # YouTube example URL: https://www.youtube.com/watch?v=REPLACE_ME
 # Ozolio also accepts embed URLs or Explore URLs instead of a host page.

@@ -20,7 +20,7 @@ def seconds_until_midnight(now=None):
     return (midnight.astimezone(timezone.utc) - now.astimezone(timezone.utc)).total_seconds()
 
 
-def refresh_guide_at_midnight(channels, stop_event):
+def refresh_guide_at_midnight(channels, server_config, stop_event):
     while not stop_event.is_set():
         delay = seconds_until_midnight()
         logger.info(
@@ -31,7 +31,7 @@ def refresh_guide_at_midnight(channels, stop_event):
             return
 
         try:
-            path = write_guide(channels)
+            path = write_guide(channels, server_config)
             logger.info("Guide refresh complete: %s", path)
         except Exception:
             logger.exception(
