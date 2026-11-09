@@ -43,7 +43,9 @@ channels:
 # guide_description applies to both guide styles.
 # Optional per-channel logo: filename under assets/logos/ or a full HTTP(S) URL.
 # Example: logo: toledo-zoo.png
-# Missing/blank logo or a missing local file uses doodah-logo.png.
+# Missing/blank logo or a missing local file uses the HTTPS Doodah logo on GitHub.
+# Explicit doodah-logo.png also uses that HTTPS URL. Custom local files use HTTP;
+# use an HTTPS URL for custom zoo logos in clients such as Plex Web.
 # Remote URLs are used as supplied; unreachable remote images cannot fall back.
 # YouTube example URL: https://www.youtube.com/watch?v=REPLACE_ME
 # Ozolio also accepts embed URLs or Explore URLs instead of a host page.

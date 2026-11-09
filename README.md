@@ -89,7 +89,17 @@ Channel fields are intentionally ordered from user-facing identity to implementa
 ### Channel logos
 
 The M3U playlist and XMLTV guide include the same channel logo. By default,
-channels use the bundled Doodah logo. To use a zoo's logo, put an image in
+channels use the project's Doodah logo hosted over HTTPS on GitHub so Plex Web
+can display it. This requires client access to `raw.githubusercontent.com`.
+For Plex, prefer a direct HTTPS PNG URL from the organization’s website:
+
+```yaml
+logo: https://www.toledozoo.org/apple-touch-icon.png
+```
+
+See [channel logo sources](docs/channel-logos.md) for the selected official artwork.
+
+To use a zoo's logo, put an image in
 `assets/logos/` and add its filename to the channel:
 
 ```yaml
@@ -97,10 +107,12 @@ logo: toledo-zoo.png
 ```
 
 An omitted or blank `logo`, or a missing local image, falls back to
-`doodah-logo.png`. Full HTTP/HTTPS image URLs are also supported, but remote
+the same HTTPS Doodah logo. Explicitly setting `logo: doodah-logo.png` also uses
+that HTTPS URL. Full HTTP/HTTPS image URLs are supported, but remote
 images are used as supplied and cannot automatically fall back if their host
-is unavailable. HTTPS URLs may be needed by some guide clients; bundled
-images are served over Doodah's HTTP endpoint. Use images you have permission
+is unavailable. Custom local images are served over Doodah's HTTP endpoint,
+which Plex Web may refuse to display; use an HTTPS image URL for those clients.
+Use images you have permission
 to redistribute. Local logo changes require rebuilding the Docker image;
 config-only changes require restarting Doodah. Refresh your guide consumer to
 import updated logo metadata; client caching can delay visible changes.

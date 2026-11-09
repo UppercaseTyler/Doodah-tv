@@ -12,7 +12,10 @@ from server import DoodahRequestHandler
 
 SERVER = {"host": "192.0.2.10", "port": 8090}
 CHANNEL = {"name": "Zoo Camera", "number": 101}
-DEFAULT_URL = "http://192.0.2.10:8090/logos/doodah-logo.png"
+DEFAULT_URL = (
+    "https://raw.githubusercontent.com/UppercaseTyler/Doodah-tv/"
+    "main/assets/logos/doodah-logo.png"
+)
 
 
 class ChannelLogoTests(unittest.TestCase):
@@ -34,7 +37,8 @@ class ChannelLogoTests(unittest.TestCase):
 
     def test_missing_null_and_blank_logo_share_default_in_both_formats(self):
         for channel in (CHANNEL, dict(CHANNEL, logo=None),
-                        dict(CHANNEL, logo=""), dict(CHANNEL, logo="   ")):
+                        dict(CHANNEL, logo=""), dict(CHANNEL, logo="   "),
+                        dict(CHANNEL, logo="doodah-logo.png")):
             with self.subTest(channel=channel):
                 self.assert_metadata_logo(channel, DEFAULT_URL)
 
