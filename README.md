@@ -255,6 +255,9 @@ commercially. Distribution of covered modified versions must comply with the
 GPLv3's source-code and licensing requirements. The software comes without
 warranty. See [LICENSE](LICENSE) for the full terms.
 
+Bundled third-party organization logos retain their owners’ rights and are
+excluded from the GPL grant. See [artwork sources and notices](assets/logos/THIRD-PARTY.md).
+
 External services, livestream content, and separately installed software such
 as Dispatcharr retain their respective licenses and terms; Doodah's license
 does not grant rights to that content or software.
